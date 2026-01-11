@@ -34,6 +34,12 @@ mongoose.connect(process.env.MONGODB_URI)
 .then(() => console.log('✅ MongoDB Atlas connected successfully'))
 .catch((error) => console.error('❌ MongoDB connection error:', error));
 
+//Root Route (NEW)
+app.get('/', (req, res) => {
+  res.send('🚍 Bus Travel Platform Backend is Live');
+});
+
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);

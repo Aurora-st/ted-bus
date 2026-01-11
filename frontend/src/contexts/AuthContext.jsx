@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import API from '../utils/api';
 
 const AuthContext = createContext();
 
@@ -38,7 +39,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      const response = await axios.get('/api/auth/me');
+      const response = await axios.get(`${API}/api/auth/me`);
       setUser(response.data);
       
       // Sync theme from user preference
@@ -59,7 +60,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post('/api/auth/login', { email, password });
+      const response = await axios.post(`${API}/api/auth/login`, { email, password });
       const { token, user } = response.data;
       
       localStorage.setItem('token', token);
@@ -77,7 +78,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (name, email, password) => {
     try {
-      const response = await axios.post('/api/auth/register', {
+      const response = await axios.post(`${API}/api/auth/register`, {
         name,
         email,
         password

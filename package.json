@@ -1,0 +1,15 @@
+{
+  "name": "bus-travel-platform",
+  "version": "1.0.0",
+  "description": "Production-ready Bus Travel Platform with community features, notifications, i18n, route planning, dark mode, and reviews",
+  "main": "index.js",
+  "scripts": {
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install"
+  },
+  "keywords": ["bus", "travel", "platform", "community"],
+  "author": "",
+  "license": "ISC"
+}
+

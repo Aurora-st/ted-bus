@@ -1,0 +1,71 @@
+{
+  "common": {
+    "welcome": "Bienvenue",
+    "login": "Connexion",
+    "register": "S'inscrire",
+    "logout": "Déconnexion",
+    "home": "Accueil",
+    "community": "Communauté",
+    "routePlanning": "Planification d'itinéraire",
+    "reviews": "Avis",
+    "notifications": "Notifications",
+    "profile": "Profil",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "submit": "Soumettre",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Mot de passe",
+    "name": "Nom",
+    "loginTitle": "Connectez-vous à votre compte",
+    "registerTitle": "Créer un compte",
+    "alreadyHaveAccount": "Vous avez déjà un compte?",
+    "dontHaveAccount": "Vous n'avez pas de compte?",
+    "forgotPassword": "Mot de passe oublié?"
+  },
+  "community": {
+    "title": "Communauté",
+    "createPost": "Créer une publication",
+    "posts": "Publications",
+    "trending": "Tendances",
+    "categories": {
+      "routes": "Itinéraires",
+      "destinations": "Destinations",
+      "travelTips": "Conseils de voyage"
+    },
+    "like": "J'aime",
+    "comment": "Commentaire",
+    "share": "Partager",
+    "report": "Signaler",
+    "verifiedOnly": "Seuls les utilisateurs vérifiés peuvent créer des publications"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "noNotifications": "Aucune notification",
+    "markAllRead": "Tout marquer comme lu",
+    "preferences": "Préférences"
+  },
+  "reviews": {
+    "title": "Avis",
+    "writeReview": "Écrire un avis",
+    "rating": "Note",
+    "content": "Contenu de l'avis",
+    "minimumLength": "Minimum 50 caractères requis",
+    "onlyAfterJourney": "Vous ne pouvez évaluer qu'après avoir terminé un voyage"
+  },
+  "routePlanning": {
+    "title": "Planification d'itinéraire",
+    "startLocation": "Lieu de départ",
+    "destination": "Destination",
+    "planRoute": "Planifier l'itinéraire",
+    "saveRoute": "Enregistrer l'itinéraire",
+    "savedRoutes": "Itinéraires enregistrés"
+  }
+}
+

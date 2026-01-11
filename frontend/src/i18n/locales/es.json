@@ -1,0 +1,71 @@
+{
+  "common": {
+    "welcome": "Bienvenido",
+    "login": "Iniciar sesión",
+    "register": "Registrarse",
+    "logout": "Cerrar sesión",
+    "home": "Inicio",
+    "community": "Comunidad",
+    "routePlanning": "Planificación de rutas",
+    "reviews": "Reseñas",
+    "notifications": "Notificaciones",
+    "profile": "Perfil",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "submit": "Enviar",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito"
+  },
+  "auth": {
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "name": "Nombre",
+    "loginTitle": "Inicia sesión en tu cuenta",
+    "registerTitle": "Crea una cuenta",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+    "dontHaveAccount": "¿No tienes una cuenta?",
+    "forgotPassword": "¿Olvidaste tu contraseña?"
+  },
+  "community": {
+    "title": "Comunidad",
+    "createPost": "Crear publicación",
+    "posts": "Publicaciones",
+    "trending": "Tendencias",
+    "categories": {
+      "routes": "Rutas",
+      "destinations": "Destinos",
+      "travelTips": "Consejos de viaje"
+    },
+    "like": "Me gusta",
+    "comment": "Comentario",
+    "share": "Compartir",
+    "report": "Reportar",
+    "verifiedOnly": "Solo los usuarios verificados pueden crear publicaciones"
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "noNotifications": "No hay notificaciones",
+    "markAllRead": "Marcar todas como leídas",
+    "preferences": "Preferencias"
+  },
+  "reviews": {
+    "title": "Reseñas",
+    "writeReview": "Escribir reseña",
+    "rating": "Calificación",
+    "content": "Contenido de la reseña",
+    "minimumLength": "Se requieren al menos 50 caracteres",
+    "onlyAfterJourney": "Solo puedes reseñar después de completar un viaje"
+  },
+  "routePlanning": {
+    "title": "Planificación de rutas",
+    "startLocation": "Ubicación de inicio",
+    "destination": "Destino",
+    "planRoute": "Planificar ruta",
+    "saveRoute": "Guardar ruta",
+    "savedRoutes": "Rutas guardadas"
+  }
+}
+

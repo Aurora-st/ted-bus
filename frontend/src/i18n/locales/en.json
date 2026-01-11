@@ -1,0 +1,71 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "home": "Home",
+    "community": "Community",
+    "routePlanning": "Route Planning",
+    "reviews": "Reviews",
+    "notifications": "Notifications",
+    "profile": "Profile",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "submit": "Submit",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "loginTitle": "Login to your account",
+    "registerTitle": "Create an account",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?",
+    "forgotPassword": "Forgot password?"
+  },
+  "community": {
+    "title": "Community",
+    "createPost": "Create Post",
+    "posts": "Posts",
+    "trending": "Trending",
+    "categories": {
+      "routes": "Routes",
+      "destinations": "Destinations",
+      "travelTips": "Travel Tips"
+    },
+    "like": "Like",
+    "comment": "Comment",
+    "share": "Share",
+    "report": "Report",
+    "verifiedOnly": "Only verified users can create posts"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "noNotifications": "No notifications",
+    "markAllRead": "Mark all as read",
+    "preferences": "Preferences"
+  },
+  "reviews": {
+    "title": "Reviews",
+    "writeReview": "Write Review",
+    "rating": "Rating",
+    "content": "Review Content",
+    "minimumLength": "Minimum 50 characters required",
+    "onlyAfterJourney": "You can only review after completing a journey"
+  },
+  "routePlanning": {
+    "title": "Route Planning",
+    "startLocation": "Start Location",
+    "destination": "Destination",
+    "planRoute": "Plan Route",
+    "saveRoute": "Save Route",
+    "savedRoutes": "Saved Routes"
+  }
+}
+

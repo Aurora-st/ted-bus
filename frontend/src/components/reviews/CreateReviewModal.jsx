@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../../utils/api';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 
@@ -26,7 +26,7 @@ const CreateReviewModal = ({ onClose, onSuccess }) => {
 
     setLoading(true);
     try {
-      await axios.post('/api/reviews', {
+      await api.post('/api/reviews', {
         routeId,
         journeyId,
         rating,

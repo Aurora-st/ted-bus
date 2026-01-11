@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 import { formatDistanceToNow } from 'date-fns';
@@ -18,7 +18,7 @@ const Notifications = () => {
     setLoading(true);
     try {
       const params = unreadOnly ? { unreadOnly: 'true' } : {};
-      const response = await axios.get('/api/notifications', { params });
+      const response = await api.get('/api/notifications', { params });
       setNotifications(response.data.notifications || []);
     } catch (error) {
       toast.error('Failed to load notifications');
@@ -29,7 +29,7 @@ const Notifications = () => {
 
   const markAsRead = async (id) => {
     try {
-      await axios.put(`/api/notifications/${id}/read`);
+      await api.put(`/api/notifications/${id}/read`);
       fetchNotifications();
     } catch (error) {
       toast.error('Failed to mark as read');
@@ -38,7 +38,7 @@ const Notifications = () => {
 
   const markAllAsRead = async () => {
     try {
-      await axios.put('/api/notifications/read-all');
+      await api.put('/api/notifications/read-all');
       fetchNotifications();
       toast.success('All notifications marked as read');
     } catch (error) {

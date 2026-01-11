@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../utils/api';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
@@ -18,7 +18,7 @@ const CommentSection = ({ postId }) => {
 
   const fetchComments = async () => {
     try {
-      const response = await axios.get(`/api/posts/${postId}/comments`);
+      const response = await api.get(`/api/posts/${postId}/comments`);
       setComments(response.data);
     } catch (error) {
       console.error('Failed to fetch comments:', error);
@@ -39,7 +39,7 @@ const CommentSection = ({ postId }) => {
 
     setLoading(true);
     try {
-      await axios.post(`/api/posts/${postId}/comment`, {
+      await api.post(`/api/posts/${postId}/comment`, {
         content: newComment
       });
       setNewComment('');

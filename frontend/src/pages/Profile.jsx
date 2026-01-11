@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
@@ -22,7 +22,7 @@ const Profile = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await axios.get('/api/users/stats');
+      const response = await api.get('/api/users/stats');
       setStats(response.data);
     } catch (error) {
       console.error('Failed to fetch stats:', error);
@@ -33,7 +33,7 @@ const Profile = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.put('/api/users/profile', {
+      const response = await api.put('/api/users/profile', {
         name,
         bio
       });

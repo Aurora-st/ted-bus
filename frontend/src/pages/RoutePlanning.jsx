@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { GoogleMap, LoadScript, DirectionsRenderer, Marker } from '@react-google-maps/api';
-import axios from 'axios';
+import api from '../utils/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
@@ -34,7 +34,7 @@ const RoutePlanning = () => {
     try {
       // In a real app, you'd geocode the addresses first
       // For demo, using coordinates
-      const response = await axios.post('/api/route-planning/plan', {
+      const response = await api.post('/api/route-planning/plan', {
         startLocation: {
           address: startLocation,
           coordinates: { lat: 40.7128, lng: -74.0060 } // Demo coordinates
@@ -60,7 +60,7 @@ const RoutePlanning = () => {
     }
 
     try {
-      await axios.post('/api/route-planning/save', {
+      await api.post('/api/route-planning/save', {
         name: routeName,
         startLocation: {
           address: startLocation,

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../../utils/api';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
@@ -18,7 +18,7 @@ const ReviewCard = ({ review, onUpdate }) => {
     }
 
     try {
-      await axios.post(`/api/reviews/${review._id}/upvote`);
+      await api.post(`/api/reviews/${review._id}/upvote`);
       setUpvoted(true);
       setUpvotesCount(upvotesCount + 1);
     } catch (error) {

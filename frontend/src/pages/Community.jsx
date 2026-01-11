@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
@@ -21,7 +21,7 @@ const Community = () => {
   const fetchPosts = async () => {
     try {
       const params = category ? { category } : {};
-      const response = await axios.get('/api/posts', { params });
+      const response = await api.get('/api/posts', { params });
       setPosts(response.data.posts || []);
     } catch (error) {
       toast.error('Failed to load posts');

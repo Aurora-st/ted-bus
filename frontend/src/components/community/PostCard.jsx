@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../../utils/api';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
@@ -21,11 +21,11 @@ const PostCard = ({ post, onUpdate }) => {
 
     try {
       if (liked) {
-        await axios.delete(`/api/posts/${post._id}/like`);
+        await api.delete(`/api/posts/${post._id}/like`);
         setLiked(false);
         setLikesCount(likesCount - 1);
       } else {
-        await axios.post(`/api/posts/${post._id}/like`);
+        await api.post(`/api/posts/${post._id}/like`);
         setLiked(true);
         setLikesCount(likesCount + 1);
       }

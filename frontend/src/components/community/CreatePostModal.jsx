@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../../utils/api';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 
@@ -20,7 +20,7 @@ const CreatePostModal = ({ onClose, onSuccess }) => {
 
     setLoading(true);
     try {
-      await axios.post('/api/posts', {
+      await api.post('/api/posts', {
         title,
         content,
         category

@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 
 const ThemeContext = createContext();
 
@@ -33,7 +33,7 @@ export const ThemeProvider = ({ children }) => {
     const token = localStorage.getItem('token');
     if (token) {
       try {
-        await axios.put('/api/users/theme', { theme: newTheme });
+        await api.put('/api/users/theme', { theme: newTheme });
       } catch (error) {
         console.error('Failed to update theme preference:', error);
       }

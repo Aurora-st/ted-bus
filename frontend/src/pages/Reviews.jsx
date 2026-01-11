@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
@@ -43,7 +43,7 @@ const Reviews = () => {
     
     setLoading(true);
     try {
-      const response = await axios.get(`/api/reviews/route/${selectedRoute}`);
+      const response = await api.get(`/api/reviews/route/${selectedRoute}`);
       setReviews(response.data.reviews || []);
     } catch (error) {
       toast.error('Failed to load reviews');

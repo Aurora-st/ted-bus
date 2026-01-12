@@ -1,6 +1,14 @@
 # Bus Travel Platform
 
 A production-ready, full-stack Bus Travel Platform with community features, advanced notifications, internationalization, interactive route planning, dark mode, and comprehensive review system.
+## 🌐 Live Deployment
+
+Frontend (User Interface):
+https://ted-bus-frontend.onrender.com
+
+Backend (API Server):
+https://bus-backend-wq82.onrender.com
+
 
 ## 🚀 Features
 

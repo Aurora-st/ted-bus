@@ -27,14 +27,10 @@ const Reviews = () => {
 
   const fetchRoutes = async () => {
     try {
-      // In production, fetch from API
-      // For demo, using mock data
-      setRoutes([
-        { _id: '1', name: 'Route 101', routeNumber: '101' },
-        { _id: '2', name: 'Route 202', routeNumber: '202' }
-      ]);
+      const res = await api.get('/api/routes');
+      setRoutes(res.data.routes || []);
     } catch (error) {
-      console.error('Failed to fetch routes:', error);
+      toast.error('Failed to load routes');
     }
   };
 
@@ -80,7 +76,7 @@ const Reviews = () => {
           <option value="">Select a route...</option>
           {routes.map((route) => (
             <option key={route._id} value={route._id}>
-              {route.name} ({route.routeNumber})
+              {route.name}
             </option>
           ))}
         </select>

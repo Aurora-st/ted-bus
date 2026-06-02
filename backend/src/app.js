@@ -20,6 +20,7 @@ import routePlanningRoutes from '../routes/routePlanning.routes.js';
 import reviewRoutes from '../routes/review.routes.js';
 import uploadRoutes from '../routes/upload.routes.js';
 import adminRoutes from '../routes/admin.routes.js';
+import routeRoutes from '../routes/route.routes.js';
 
 export function createApp() {
   const app = express();
@@ -82,6 +83,7 @@ export function createApp() {
   app.use('/api/posts', postRoutes);
   app.use('/api/notifications', notificationRoutes);
   app.use('/api/route-planning', routePlanningRoutes);
+  app.use('/api/routes', routeRoutes);
   app.use('/api/reviews', reviewRoutes);
   app.use('/api/uploads', uploadRoutes);
   app.use('/api/admin', adminRoutes);

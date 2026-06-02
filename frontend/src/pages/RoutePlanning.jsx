@@ -1,48 +1,50 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
+import api from '../api/axios';
 
 function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
 }
 
-// Lightweight, free route estimation (no external APIs).
-function estimateRoute(from, to) {
-  const seed = `${from}|${to}`.toLowerCase();
-  let hash = 0;
-  for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
-
-  // 5km–1800km realistic intercity range
-  const distanceKm = 5 + (hash % 1796);
-
-  // Avg speed 35–65 km/h
-  const speedKmh = 35 + (hash % 31);
-  const durationHours = distanceKm / speedKmh;
-  const durationMin = Math.round(durationHours * 60);
-
-  const steps = [
-    `Start from ${from}`,
-    'Head towards the main road',
-    'Continue on the highway for the longest stretch',
-    'Take local roads approaching the destination',
-    `Arrive at ${to}`
+function buildSteps(origin, destination, routeName) {
+  const name = routeName ? ` (${routeName})` : '';
+  return [
+    `Start at ${origin}`,
+    `Board the bus${name}`,
+    `Travel towards ${destination}`,
+    `Arrive at ${destination}`
   ];
-
-  return { distanceKm, durationMin, steps };
 }
 
 const RoutePlanning = () => {
   const { t } = useTranslation();
-  const [from, setFrom] = useState('');
-  const [to, setTo] = useState('');
+  const [routes, setRoutes] = useState([]);
+  const [selectedRouteId, setSelectedRouteId] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
 
-  const canPlan = useMemo(() => from.trim().length >= 2 && to.trim().length >= 2, [from, to]);
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await api.get('/api/routes');
+        setRoutes(res.data.routes || []);
+      } catch (e) {
+        toast.error('Failed to load routes');
+      }
+    })();
+  }, []);
+
+  const selectedRoute = useMemo(
+    () => routes.find((r) => String(r._id) === String(selectedRouteId)) || null,
+    [routes, selectedRouteId]
+  );
+
+  const canPlan = useMemo(() => !!selectedRouteId, [selectedRouteId]);
 
   const handlePlan = async () => {
     if (!canPlan) {
-      toast.error('Please enter both From and To locations');
+      toast.error('Please select a route');
       return;
     }
 
@@ -51,8 +53,15 @@ const RoutePlanning = () => {
     try {
       // simulate async to keep UI interactive
       await new Promise((r) => setTimeout(r, 500));
-      const route = estimateRoute(from.trim(), to.trim());
-      setResult(route);
+      const origin = selectedRoute?.origin || 'Origin';
+      const destination = selectedRoute?.destination || 'Destination';
+      setResult({
+        distanceKm: selectedRoute?.distanceKm ?? 0,
+        durationMin: selectedRoute?.durationMin ?? 0,
+        steps: buildSteps(origin, destination, selectedRoute?.name),
+        origin,
+        destination
+      });
       toast.success('Route planned!');
     } catch (e) {
       toast.error('Failed to plan route');
@@ -75,29 +84,27 @@ const RoutePlanning = () => {
       <div className="relative overflow-hidden rounded-2xl border border-white/20 bg-white/60 dark:bg-gray-900/50 backdrop-blur-xl shadow-xl">
         <div className="absolute inset-0 bg-gradient-to-br from-primary-500/10 via-transparent to-purple-500/10" />
         <div className="relative p-6">
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                From
-              </label>
-              <input
-                value={from}
-                onChange={(e) => setFrom(e.target.value)}
-                placeholder="e.g., Pune"
-                className="w-full rounded-xl border border-gray-200/70 dark:border-gray-700 bg-white/70 dark:bg-gray-800/60 px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                To
-              </label>
-              <input
-                value={to}
-                onChange={(e) => setTo(e.target.value)}
-                placeholder="e.g., Mumbai"
-                className="w-full rounded-xl border border-gray-200/70 dark:border-gray-700 bg-white/70 dark:bg-gray-800/60 px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-              />
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+              Select route
+            </label>
+            <select
+              value={selectedRouteId}
+              onChange={(e) => setSelectedRouteId(e.target.value)}
+              className="w-full rounded-xl border border-gray-200/70 dark:border-gray-700 bg-white/70 dark:bg-gray-800/60 px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+            >
+              <option value="">Choose a route…</option>
+              {routes.map((r) => (
+                <option key={r._id} value={r._id}>
+                  {r.name}
+                </option>
+              ))}
+            </select>
+            {selectedRoute && (
+              <div className="mt-2 text-xs text-gray-600 dark:text-gray-300">
+                {selectedRoute.origin} → {selectedRoute.destination}
+              </div>
+            )}
           </div>
 
           <div className="mt-5 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
@@ -125,7 +132,7 @@ const RoutePlanning = () => {
                   Estimated trip
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                  {from} → {to}
+                  {result.origin} → {result.destination}
                 </p>
               </div>
               <div className="flex gap-3">

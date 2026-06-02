@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import api from '../../utils/api';
+import api from '../../api/axios';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 
@@ -20,13 +20,13 @@ const CreatePostModal = ({ onClose, onSuccess }) => {
 
     setLoading(true);
     try {
-      await api.post('/api/posts', {
+      const response = await api.post('/api/posts', {
         title,
         content,
         category
       });
       toast.success('Post created successfully!');
-      onSuccess();
+      onSuccess?.(response.data?.post);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to create post');
     } finally {

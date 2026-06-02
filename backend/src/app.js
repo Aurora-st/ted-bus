@@ -33,10 +33,24 @@ export function createApp() {
   app.use(helmet());
   app.use(compression());
 
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    env.frontendUrl
+  ].filter(Boolean);
+
   app.use(
     cors({
-      origin: env.frontendUrl,
-      credentials: true
+      origin(origin, cb) {
+        // Allow non-browser clients (curl/postman) with no Origin
+        if (!origin) return cb(null, true);
+        if (allowedOrigins.includes(origin)) return cb(null, true);
+        // Allow Vercel preview deployments
+        if (/^https:\/\/.*\.vercel\.app$/.test(origin)) return cb(null, true);
+        return cb(new Error('Not allowed by CORS'));
+      },
+      credentials: true,
+      optionsSuccessStatus: 204
     })
   );
 

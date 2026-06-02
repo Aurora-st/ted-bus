@@ -1,383 +1,188 @@
 # Bus Travel Platform
 
-A production-ready, full-stack Bus Travel Platform with community features, advanced notifications, internationalization, interactive route planning, dark mode, and comprehensive review system.
+Full-stack bus travel platform with community posts, route planning, reviews, advanced notifications, and internationalization.
+
+- **Frontend**: React + Vite + Tailwind
+- **Backend**: Node.js + Express + MongoDB (Mongoose)
+
 ## 🌐 Live Deployment
 
-Frontend (User Interface):
-https://ted-bus-frontend.onrender.com
+- Frontend: https://ted-bus-frontend.onrender.com
+- Backend API: https://bus-backend-wq82.onrender.com
 
-Backend (API Server):
-https://bus-backend-wq82.onrender.com
+## ✨ Features
 
+- Community & user-generated content (posts, likes, comments, reports)
+- Trending posts based on engagement
+- Advanced notifications (email + optional push) with user preferences
+- i18n (English/Spanish/French) using `react-i18next`
+- Interactive route planning (Google Maps integration)
+- Dark mode (persisted)
+- Reviews system (verified users, journey-based, moderation)
+- API metrics endpoint (Prometheus/Grafana-friendly)
 
-## 🚀 Features
+## 🧰 Repo Layout
 
-### 1. Community & User-Generated Content
-- **Verified Users Only**: Only verified users can create posts
-- **Post Management**: Create posts with text and images
-- **Social Interactions**: Like posts, comment on posts
-- **Content Moderation**: Report posts for review
-- **Community Forums**: Organized by Routes, Destinations, and Travel Tips
-- **Trending Posts**: Algorithm-based trending posts based on engagement
-- **Social Sharing**: Shareable post URLs
+- `backend/` — Express API server
+- `frontend/` — React web app
 
-### 2. Advanced Notification System
-- **Multi-Channel Notifications**: Email and Push notifications
-- **Notification Types**:
-  - Booking confirmation
-  - Cancellation alerts
-  - Schedule changes
-  - Journey reminders
-  - Promotions (opt-in)
-- **User Preferences**: Granular control over notification channels
-- **Localization**: Language-based notifications
-- **Retry Logic**: Automatic retry for failed notifications
-- **Notification History**: Complete log of all notifications
+## ✅ Prerequisites
 
-### 3. Internationalization (i18n)
-- **Multi-Language Support**: English, Spanish, French
-- **Persistent Language**: Saved in database and localStorage
-- **Dynamic Switching**: Change language without page reload
-- **Comprehensive Translation**: UI text, buttons, errors, validation messages
-- **Fallback Support**: Defaults to English if translation missing
+- Node.js (v18+ recommended)
+- MongoDB Atlas (or local MongoDB)
+- Google Maps API key (for route planning)
+- Email credentials (Gmail recommended) for notification/email flows
 
-### 4. Interactive Route Planning Tool
-- **Route Planning**: Select start location, destination, and waypoints
-- **Interactive Maps**: Google Maps integration
-- **Route Information**: Distance, ETA, traffic congestion
-- **Alternate Routes**: Auto-suggest based on traffic
-- **Route Comparison**: Compare routes by time, distance, and traffic
-- **Saved Routes**: Save favorite routes to user profile
-- **Live Traffic Updates**: Real-time traffic information
+## 🔧 Local Development
 
-### 5. Dark Mode
-- **Theme Toggle**: Instant light/dark mode switching
-- **Persistent Preference**: Saved in database and localStorage
-- **Global Application**: Applied across all components
-- **Default Mode**: Light mode if no preference set
+### 1) Install dependencies
 
-### 6. Route Rating & Review System
-- **Verified Users Only**: Only verified users can review
-- **Journey-Based**: Reviews only after journey completion
-- **One Review Per Journey**: Prevents duplicate reviews
-- **5-Star Rating System**: 1-5 star ratings
-- **Minimum Content Length**: 50 characters required
-- **Edit Window**: 24-hour edit window, then locked
-- **Moderation**: Report reviews, auto-hide after multiple reports
-- **Trusted Reviewers**: Highlighted based on upvotes
-- **Statistics**: Average rating, recent reviews, rating distribution
-
-## 🛠️ Tech Stack
-
-### Frontend
-- **React.js** (Vite) - Modern React framework
-- **Tailwind CSS** - Utility-first CSS framework
-- **React Router** - Client-side routing
-- **react-i18next** - Internationalization
-- **Axios** - HTTP client
-- **React Hot Toast** - Toast notifications
-- **Google Maps API** - Map integration
-- **date-fns** - Date formatting
-
-### Backend
-- **Node.js** - Runtime environment
-- **Express.js** - Web framework
-- **MongoDB Atlas** - Cloud database
-- **Mongoose** - MongoDB ODM
-- **JWT** - Authentication
-- **bcryptjs** - Password hashing
-- **Nodemailer** - Email notifications
-- **Firebase Admin SDK** - Push notifications (optional)
-
-## 📋 Prerequisites
-
-- Node.js (v18 or higher)
-- MongoDB Atlas account (or local MongoDB)
-- Google Maps API key
-- Email account for notifications (Gmail recommended)
-
-## 🔧 Installation & Setup
-
-### 1. Clone the Repository
+From repo root:
 
 ```bash
-git clone <repository-url>
-cd "Ted Bus"
+npm install
+cd backend && npm install
+cd ../frontend && npm install
 ```
 
-### 2. Install Dependencies
+### 2) Configure environment variables
 
-```bash
-# Install root dependencies
-npm install
+#### Backend (`backend/production.env.example` → create `backend/.env`)
 
-# Install backend dependencies
-cd backend
-npm install
-
-# Install frontend dependencies
-cd ../frontend
-npm install
-```
-
-### 3. Backend Configuration
-
-1. Create a `.env` file in the `backend` directory:
+Create `backend/.env`:
 
 ```env
-# Server Configuration
-PORT=5000
 NODE_ENV=development
+PORT=5000
 
-# MongoDB Atlas Connection
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/bus-travel-platform?retryWrites=true&w=majority
+MONGODB_URI=mongodb+srv://<user>:<pass>@<cluster-host>/<db>?retryWrites=true&w=majority
+JWT_SECRET=change-me-use-32plus-bytes
 
-# JWT Secret
-JWT_SECRET=your-super-secret-jwt-key-change-in-production
+FRONTEND_URL=http://localhost:5173
+GOOGLE_MAPS_API_KEY=
 
-# Email Configuration
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
-EMAIL_USER=your-email@gmail.com
-EMAIL_PASS=your-app-password
+EMAIL_USER=
+EMAIL_PASS=
 
-# Google Maps API Key
-GOOGLE_MAPS_API_KEY=your-google-maps-api-key
-
-# Frontend URL (for CORS)
-FRONTEND_URL=http://localhost:5173
+# Optional: metrics protection
+METRICS_TOKEN=
 ```
 
-2. **MongoDB Atlas Setup**:
-   - Create a MongoDB Atlas account at https://www.mongodb.com/cloud/atlas
-   - Create a new cluster
-   - Get your connection string
-   - Replace `<username>`, `<password>`, and `<cluster>` in the connection string
+Backend env validation (fail-fast): `NODE_ENV`, `PORT`, `MONGODB_URI`, `JWT_SECRET`, `FRONTEND_URL` must be present.
 
-3. **Google Maps API Setup**:
-   - Go to https://console.cloud.google.com/
-   - Enable Maps JavaScript API and Directions API
-   - Create an API key
-   - Add the key to your `.env` file
-
-4. **Email Setup** (Gmail):
-   - Enable 2-Step Verification
-   - Generate an App Password
-   - Use the app password in `EMAIL_PASS`
-
-### 4. Frontend Configuration
-
-1. Create a `.env` file in the `frontend` directory:
+#### Frontend (`frontend/` → create `frontend/.env`)
 
 ```env
 VITE_GOOGLE_MAPS_API_KEY=your-google-maps-api-key
+# (Optional but recommended) if your API base URL differs from default
+# VITE_API_URL=http://localhost:5000
 ```
 
-### 5. Run the Application
+> Frontend Axios base URL is read from `import.meta.env.VITE_API_URL`.
 
-**Terminal 1 - Backend:**
+### 3) Run
+
+Terminal 1 (Backend):
+
 ```bash
 cd backend
 npm run dev
 ```
 
-**Terminal 2 - Frontend:**
+Terminal 2 (Frontend):
+
 ```bash
 cd frontend
 npm run dev
 ```
 
-The application will be available at:
+Default local URLs:
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:5000
 
-## 📁 Project Structure
+## 🚀 Deployment Notes (Render)
 
-```
-bus-travel-platform/
-├── backend/
-│   ├── config/
-│   │   └── database.js          # MongoDB connection
-│   ├── controllers/
-│   │   ├── auth.controller.js   # Authentication logic
-│   │   ├── user.controller.js   # User management
-│   │   ├── post.controller.js   # Post operations
-│   │   ├── notification.controller.js  # Notifications
-│   │   ├── routePlanning.controller.js # Route planning
-│   │   └── review.controller.js # Review system
-│   ├── middleware/
-│   │   └── auth.middleware.js   # JWT authentication
-│   ├── models/
-│   │   ├── User.model.js        # User schema
-│   │   ├── Post.model.js        # Post schema
-│   │   ├── Comment.model.js     # Comment schema
-│   │   ├── Like.model.js        # Like schema
-│   │   ├── Report.model.js      # Report schema
-│   │   ├── Notification.model.js # Notification schema
-│   │   ├── NotificationPreference.model.js
-│   │   ├── SavedRoute.model.js  # Saved routes
-│   │   ├── Route.model.js       # Bus routes
-│   │   ├── Journey.model.js     # User journeys
-│   │   ├── Review.model.js      # Reviews
-│   │   └── ReviewReport.model.js # Review reports
-│   ├── routes/
-│   │   ├── auth.routes.js       # Auth endpoints
-│   │   ├── user.routes.js       # User endpoints
-│   │   ├── post.routes.js       # Post endpoints
-│   │   ├── notification.routes.js # Notification endpoints
-│   │   ├── routePlanning.routes.js # Route planning endpoints
-│   │   └── review.routes.js     # Review endpoints
-│   ├── services/
-│   │   └── notification.service.js # Notification service
-│   ├── server.js                # Express server
-│   └── package.json
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── community/       # Community components
-│   │   │   ├── reviews/         # Review components
-│   │   │   └── layout/         # Layout components
-│   │   ├── contexts/
-│   │   │   ├── AuthContext.jsx  # Auth state
-│   │   │   └── ThemeContext.jsx # Theme state
-│   │   ├── i18n/
-│   │   │   ├── config.js        # i18n configuration
-│   │   │   └── locales/        # Translation files
-│   │   ├── pages/
-│   │   │   ├── Home.jsx
-│   │   │   ├── Login.jsx
-│   │   │   ├── Register.jsx
-│   │   │   ├── Community.jsx
-│   │   │   ├── RoutePlanning.jsx
-│   │   │   ├── Reviews.jsx
-│   │   │   ├── Notifications.jsx
-│   │   │   └── Profile.jsx
-│   │   ├── App.jsx              # Main app component
-│   │   ├── main.jsx             # Entry point
-│   │   └── index.css            # Global styles
-│   ├── index.html
-│   ├── vite.config.js
-│   ├── tailwind.config.js
-│   └── package.json
-└── README.md
-```
+### Frontend
 
-## 🔐 Authentication
+The frontend uses `frontend/render.yaml` with a standard static web build.
 
-The platform uses JWT (JSON Web Tokens) for authentication:
+Ensure you set `VITE_GOOGLE_MAPS_API_KEY` (and `VITE_API_URL` if needed) in the Render environment.
 
-1. **Register**: Create a new account
-2. **Login**: Get JWT token
-3. **Protected Routes**: Require authentication
-4. **Verified Users**: Special permissions for verified accounts
+### Backend
 
-## 📡 API Endpoints
+Backend entrypoint: `backend/src/server.js`.
+
+Set the required env vars in your Render service:
+- `NODE_ENV`, `PORT`, `MONGODB_URI`, `JWT_SECRET`, `FRONTEND_URL`
+
+Backend also supports:
+- `GOOGLE_MAPS_API_KEY`
+- Cloudinary vars
+- Email vars
+- `METRICS_TOKEN` (optional)
+
+## 📌 API Endpoints
+
+Base paths are mounted in `backend/src/app.js`.
 
 ### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
-- `GET /api/auth/me` - Get current user
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/auth/me`
+
+### Users
+- `GET /api/users/*` (see `backend/routes/user.routes.js`)
 
 ### Posts
-- `GET /api/posts` - Get all posts
-- `GET /api/posts/trending` - Get trending posts
-- `GET /api/posts/:id` - Get post by ID
-- `POST /api/posts` - Create post (verified users only)
-- `POST /api/posts/:id/like` - Like post
-- `POST /api/posts/:id/comment` - Comment on post
-- `POST /api/posts/:id/report` - Report post
+- `GET /api/posts`
+- `GET /api/posts/trending`
+- `GET /api/posts/:id`
+- `POST /api/posts` (verified users only)
+- `POST /api/posts/:id/like`
+- `POST /api/posts/:id/comment`
+- `POST /api/posts/:id/report`
 
 ### Notifications
-- `GET /api/notifications` - Get user notifications
-- `PUT /api/notifications/:id/read` - Mark as read
-- `PUT /api/notifications/read-all` - Mark all as read
-- `GET /api/notifications/preferences` - Get preferences
-- `PUT /api/notifications/preferences` - Update preferences
+- `GET /api/notifications`
+- `PUT /api/notifications/:id/read`
+- `PUT /api/notifications/read-all`
+- `GET /api/notifications/preferences`
+- `PUT /api/notifications/preferences`
 
 ### Route Planning
-- `POST /api/route-planning/plan` - Plan a route
-- `POST /api/route-planning/save` - Save route (authenticated)
-- `GET /api/route-planning/saved` - Get saved routes
-- `POST /api/route-planning/compare` - Compare routes
+- `POST /api/route-planning/plan`
+- `POST /api/route-planning/save`
+- `GET /api/route-planning/saved`
+- `POST /api/route-planning/compare`
 
 ### Reviews
-- `GET /api/reviews/route/:routeId` - Get route reviews
-- `POST /api/reviews` - Create review (verified users only)
-- `PUT /api/reviews/:id` - Update review (within 24h)
-- `POST /api/reviews/:id/upvote` - Upvote review
-- `POST /api/reviews/:id/report` - Report review
+- `GET /api/reviews/route/:routeId`
+- `POST /api/reviews` (verified users only)
+- `PUT /api/reviews/:id`
+- `POST /api/reviews/:id/upvote`
+- `POST /api/reviews/:id/report`
 
-## 🎨 Features in Detail
+### Uploads
+- `POST /api/uploads/*` (see `backend/routes/upload.routes.js`)
 
-### Community Posts
-- Create posts in categories: Routes, Destinations, Travel Tips
-- Like and comment on posts
-- Report inappropriate content
-- Trending algorithm based on engagement
+### Admin
+- `POST /api/admin/*` (see `backend/routes/admin.routes.js`)
 
-### Notifications
-- Email notifications via Nodemailer
-- Push notifications (Firebase FCM - requires setup)
-- User preferences for each notification type
-- Retry mechanism for failed notifications
+### Health / Metrics
+- `GET /api/health`
+- `GET /metrics` (metrics route; may require `METRICS_TOKEN`)
 
-### Route Planning
-- Google Maps integration
-- Route comparison
-- Save favorite routes
-- Traffic information
+## 🧪 Testing
 
-### Reviews
-- Only after journey completion
-- 24-hour edit window
-- Moderation system
-- Trusted reviewer badges
+There is no dedicated test runner documented in this repo snapshot.
 
-## 🚀 Deployment
+## 📝 License
 
-### Backend Deployment (Heroku/Railway/Render)
-
-1. Set environment variables in your hosting platform
-2. Update `FRONTEND_URL` to your frontend URL
-3. Deploy the backend
-
-### Frontend Deployment (Vercel/Netlify)
-
-1. Set `VITE_GOOGLE_MAPS_API_KEY` in environment variables
-2. Update API URLs if needed
-3. Deploy the frontend
-
-## 📝 Notes
-
-- **Email Verification**: Currently simplified. In production, implement proper email verification flow.
-- **Push Notifications**: Firebase Admin SDK setup required for push notifications.
-- **Image Upload**: Currently supports image URLs. Implement file upload with Multer for production.
-- **Geocoding**: Route planning uses coordinates. Implement address geocoding for better UX.
-
-## 🤝 Contributing
-
-This is a production-ready codebase following clean architecture principles:
-- Separation of concerns (controllers, routes, models, services)
-- Modular code structure
-- Comprehensive error handling
-- Code comments explaining logic
-
-## 📄 License
-
-This project is created for educational/internship purposes.
-
-## 👨‍💻 Author
-
-Built as a production-ready, internship-quality Bus Travel Platform.
-
----
-
-**Note**: Remember to:
-1. Change JWT_SECRET in production
-2. Set up proper email verification
-3. Configure Firebase for push notifications
-4. Implement file upload for images
-5. Add rate limiting for API endpoints
-6. Set up proper error logging
-7. Add unit and integration tests
+Educational/internship project.
 

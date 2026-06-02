@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import api from '../../utils/api';
+import api from '../../api/axios';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 

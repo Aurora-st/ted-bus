@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../utils/api';
+import api from '../api/axios';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
@@ -30,7 +30,15 @@ const Community = () => {
     }
   };
 
-  const handlePostCreated = () => {
+  const handlePostCreated = (createdPost) => {
+    // Optimistic UI: add instantly; fall back to refetch if payload missing
+    if (createdPost?._id) {
+      const matchesCategory = !category || createdPost.category === category;
+      if (matchesCategory) setPosts((prev) => [createdPost, ...prev]);
+      setShowCreateModal(false);
+      return;
+    }
+
     fetchPosts();
     setShowCreateModal(false);
   };
@@ -102,10 +110,21 @@ const Community = () => {
 
       {/* Posts List */}
       {loading ? (
-        <div className="text-center py-12">{t('common.loading')}</div>
+        <div className="space-y-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div
+              key={i}
+              className="animate-pulse bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md"
+            >
+              <div className="h-4 w-40 bg-gray-200 dark:bg-gray-700 rounded mb-3" />
+              <div className="h-3 w-full bg-gray-200 dark:bg-gray-700 rounded mb-2" />
+              <div className="h-3 w-5/6 bg-gray-200 dark:bg-gray-700 rounded" />
+            </div>
+          ))}
+        </div>
       ) : posts.length === 0 ? (
         <div className="text-center py-12 text-gray-600 dark:text-gray-400">
-          No posts found
+          No posts available
         </div>
       ) : (
         <div className="space-y-4">

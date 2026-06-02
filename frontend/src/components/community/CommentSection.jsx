@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import api from '../../utils/api';
+import api from '../../api/axios';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 import { formatDistanceToNow } from 'date-fns';
 
-const CommentSection = ({ postId }) => {
+const CommentSection = ({ postId, onCommentAdded }) => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(false);
@@ -21,7 +21,8 @@ const CommentSection = ({ postId }) => {
       const response = await api.get(`/api/posts/${postId}/comments`);
       setComments(response.data);
     } catch (error) {
-      console.error('Failed to fetch comments:', error);
+      if (import.meta.env.DEV) console.error('Failed to fetch comments:', error);
+      toast.error('Failed to load comments');
     }
   };
 
@@ -39,14 +40,21 @@ const CommentSection = ({ postId }) => {
 
     setLoading(true);
     try {
-      await api.post(`/api/posts/${postId}/comment`, {
+      const response = await api.post(`/api/posts/${postId}/comment`, {
         content: newComment
       });
       setNewComment('');
-      fetchComments();
+      // Instant UI: prepend comment if returned; otherwise refetch
+      const created = response.data?.comment;
+      if (created?._id) {
+        setComments((prev) => [created, ...prev]);
+      } else {
+        fetchComments();
+      }
+      onCommentAdded?.();
       toast.success('Comment added!');
     } catch (error) {
-      toast.error('Failed to add comment');
+      toast.error(error.response?.data?.message || 'Failed to add comment');
     } finally {
       setLoading(false);
     }
@@ -70,7 +78,7 @@ const CommentSection = ({ postId }) => {
             disabled={loading || !newComment.trim()}
             className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50"
           >
-            {loading ? t('common.loading') : 'Post Comment'}
+            {loading ? 'Posting…' : 'Post Comment'}
           </button>
         </form>
       )}

@@ -3,6 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
+import api from '../../api/axios';
 
 const Navbar = () => {
   const { isAuthenticated, user, logout } = useAuth();
@@ -21,23 +22,16 @@ const Navbar = () => {
     i18n.changeLanguage(lang);
     if (isAuthenticated) {
       try {
-        await fetch('/api/users/language', {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          },
-          body: JSON.stringify({ language: lang })
-        });
+        await api.put('/api/users/language', { language: lang });
       } catch (error) {
-        console.error('Failed to update language:', error);
+        if (import.meta.env.DEV) console.error('Failed to update language:', error);
       }
     }
     setShowLangMenu(false);
   };
 
   return (
-    <nav className="bg-white dark:bg-gray-800 shadow-md transition-colors">
+    <nav className="sticky top-0 z-50 bg-white/70 dark:bg-gray-900/60 backdrop-blur-xl border-b border-white/20 shadow-sm transition-colors">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="text-2xl font-bold text-primary-600 dark:text-primary-400">

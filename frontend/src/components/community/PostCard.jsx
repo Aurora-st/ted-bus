@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import api from '../../utils/api';
+import { useEffect, useMemo, useState } from 'react';
+import api from '../../api/axios';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
@@ -7,11 +7,26 @@ import { formatDistanceToNow } from 'date-fns';
 import CommentSection from './CommentSection';
 
 const PostCard = ({ post, onUpdate }) => {
-  const [liked, setLiked] = useState(false);
+  const { isAuthenticated, user } = useAuth();
+  const userId = user?.id || user?._id;
+
+  const initiallyLiked = useMemo(() => {
+    if (!userId) return false;
+    const likes = post.likes || [];
+    return likes.some((id) => String(id) === String(userId));
+  }, [post.likes, userId]);
+
+  const [liked, setLiked] = useState(initiallyLiked);
   const [likesCount, setLikesCount] = useState(post.likesCount || 0);
+  const [commentsCount, setCommentsCount] = useState(post.commentsCount || 0);
   const [showComments, setShowComments] = useState(false);
-  const { isAuthenticated } = useAuth();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    setLikesCount(post.likesCount || 0);
+    setCommentsCount(post.commentsCount || 0);
+    setLiked(initiallyLiked);
+  }, [post._id, post.likesCount, post.commentsCount, initiallyLiked]);
 
   const handleLike = async () => {
     if (!isAuthenticated) {
@@ -21,16 +36,16 @@ const PostCard = ({ post, onUpdate }) => {
 
     try {
       if (liked) {
-        await api.delete(`/api/posts/${post._id}/like`);
+        const res = await api.delete(`/api/posts/${post._id}/like`);
         setLiked(false);
-        setLikesCount(likesCount - 1);
+        setLikesCount(res.data?.likesCount ?? Math.max(0, likesCount - 1));
       } else {
-        await api.post(`/api/posts/${post._id}/like`);
+        const res = await api.post(`/api/posts/${post._id}/like`);
         setLiked(true);
-        setLikesCount(likesCount + 1);
+        setLikesCount(res.data?.likesCount ?? likesCount + 1);
       }
     } catch (error) {
-      toast.error('Failed to like post');
+      toast.error(error.response?.data?.message || 'Failed to like post');
     }
   };
 
@@ -41,7 +56,7 @@ const PostCard = ({ post, onUpdate }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md transition-all hover:shadow-lg hover:-translate-y-[1px]">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center text-white font-semibold">
@@ -96,7 +111,7 @@ const PostCard = ({ post, onUpdate }) => {
           className="flex items-center space-x-2 text-gray-600 dark:text-gray-400"
         >
           <span>💬</span>
-          <span>{post.commentsCount || 0}</span>
+          <span>{commentsCount}</span>
         </button>
         <button
           onClick={handleShare}
@@ -108,7 +123,7 @@ const PostCard = ({ post, onUpdate }) => {
       </div>
 
       {showComments && (
-        <CommentSection postId={post._id} />
+        <CommentSection postId={post._id} onCommentAdded={() => setCommentsCount((c) => c + 1)} />
       )}
     </div>
   );

@@ -2,6 +2,39 @@ import User from '../models/User.model.js';
 import NotificationPreference from '../models/NotificationPreference.model.js';
 import jwt from 'jsonwebtoken';
 import { validationResult } from 'express-validator';
+import crypto from 'crypto';
+import nodemailer from 'nodemailer';
+
+function sha256(input) {
+  return crypto.createHash('sha256').update(input).digest('hex');
+}
+
+async function sendVerificationEmail({ to, token }) {
+  if (!process.env.EMAIL_HOST || !process.env.EMAIL_USER || !process.env.EMAIL_PASS) return;
+
+  const transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST,
+    port: Number(process.env.EMAIL_PORT || 587),
+    secure: false,
+    auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
+  });
+
+  // Keep it simple: token is returned to frontend, which can call verify endpoint.
+  // If you later add a frontend "verify" page, you can change this to a link.
+  const html = `
+    <p>Welcome to Bus Travel Platform.</p>
+    <p>Your verification code:</p>
+    <p style="font-size:20px;letter-spacing:2px"><b>${token}</b></p>
+    <p>This code expires in 30 minutes.</p>
+  `;
+
+  await transporter.sendMail({
+    from: process.env.EMAIL_USER,
+    to,
+    subject: 'Verify your email',
+    html
+  });
+}
 
 /**
  * Register a new user
@@ -32,6 +65,13 @@ export const register = async (req, res) => {
     // Create default notification preferences
     await NotificationPreference.create({ user: user._id });
 
+    // Create verification token (production-grade)
+    const verificationToken = crypto.randomBytes(16).toString('hex');
+    user.emailVerificationTokenHash = sha256(verificationToken);
+    user.emailVerificationExpiresAt = new Date(Date.now() + 30 * 60 * 1000);
+    await user.save();
+    await sendVerificationEmail({ to: user.email, token: verificationToken });
+
     // Generate token
     const token = jwt.sign(
       { userId: user._id },
@@ -48,7 +88,10 @@ export const register = async (req, res) => {
         email: user.email,
         isVerified: user.isVerified,
         role: user.role
-      }
+      },
+      // Keep response backward compatible while enabling real verification.
+      // Frontend may ignore this field; it’s safe to expose (one-time token).
+      verificationToken: process.env.NODE_ENV === 'production' ? undefined : verificationToken
     });
   } catch (error) {
     console.error('Register error:', error);
@@ -110,17 +153,43 @@ export const login = async (req, res) => {
  */
 export const verifyEmail = async (req, res) => {
   try {
-    const { email, verificationCode } = req.body;
+    const { email, verificationCode, token } = req.body;
 
-    // Simplified verification - in production, use proper email verification
+    // Production-grade verification: requires email + token
+    const providedToken = token || verificationCode;
+    if (!email || !providedToken) {
+      return res.status(400).json({ message: 'Email and verification token are required' });
+    }
+
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // For demo purposes, accept any code or skip verification
-    // In production, verify against stored code
+    // If already verified, return success idempotently
+    if (user.isVerified) {
+      return res.json({ message: 'Email already verified' });
+    }
+
+    // In production, we must have a token hash set and not expired
+    if (process.env.NODE_ENV === 'production') {
+      if (!user.emailVerificationTokenHash || !user.emailVerificationExpiresAt) {
+        return res.status(400).json({ message: 'No active verification token. Please re-register or request a new token.' });
+      }
+      if (user.emailVerificationExpiresAt.getTime() < Date.now()) {
+        return res.status(400).json({ message: 'Verification token expired. Please request a new token.' });
+      }
+
+      const providedHash = sha256(String(providedToken));
+      if (providedHash !== user.emailVerificationTokenHash) {
+        return res.status(400).json({ message: 'Invalid verification token' });
+      }
+    }
+
     user.isVerified = true;
+    user.verifiedAt = new Date();
+    user.emailVerificationTokenHash = null;
+    user.emailVerificationExpiresAt = null;
     await user.save();
 
     res.json({ message: 'Email verified successfully' });

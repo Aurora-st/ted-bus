@@ -61,6 +61,32 @@ const userSchema = new mongoose.Schema({
   commentsCount: {
     type: Number,
     default: 0
+  },
+  // Email verification (production-grade)
+  emailVerificationTokenHash: {
+    type: String,
+    default: null
+  },
+  emailVerificationExpiresAt: {
+    type: Date,
+    default: null
+  },
+  verifiedAt: {
+    type: Date,
+    default: null
+  },
+  isBanned: {
+    type: Boolean,
+    default: false
+  },
+  bannedAt: {
+    type: Date,
+    default: null
+  },
+  banReason: {
+    type: String,
+    default: null,
+    maxlength: 200
   }
 }, {
   timestamps: true

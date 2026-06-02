@@ -3,6 +3,7 @@ import Comment from '../models/Comment.model.js';
 import Like from '../models/Like.model.js';
 import Report from '../models/Report.model.js';
 import User from '../models/User.model.js';
+import { getIO } from '../src/sockets/io.js';
 
 /**
  * Create a new post (only verified users)
@@ -94,25 +95,25 @@ export const getPosts = async (req, res) => {
  */
 export const getTrendingPosts = async (req, res) => {
   try {
-    // Calculate trending score: (likes * 2 + comments) / hours since creation
+    // Trending must NOT write to DB on reads (scales badly + breaks cacheability).
+    // Compute scores in-memory and return sorted.
     const posts = await Post.find({ isDeleted: false, isHidden: false })
       .populate('author', 'name profilePicture')
-      .sort({ trendingScore: -1, createdAt: -1 })
-      .limit(10);
+      .sort({ createdAt: -1 })
+      .limit(50);
 
-    // Update trending scores
     const now = Date.now();
-    for (const post of posts) {
-      const hoursSinceCreation = (now - post.createdAt) / (1000 * 60 * 60);
-      const score = hoursSinceCreation > 0 
-        ? (post.likesCount * 2 + post.commentsCount) / hoursSinceCreation
-        : post.likesCount * 2 + post.commentsCount;
-      
-      post.trendingScore = score;
-      await post.save();
-    }
+    const scored = posts.map((post) => {
+      const hoursSinceCreation = (now - post.createdAt.getTime()) / (1000 * 60 * 60);
+      const score =
+        hoursSinceCreation > 0
+          ? (post.likesCount * 2 + post.commentsCount) / hoursSinceCreation
+          : post.likesCount * 2 + post.commentsCount;
+      return { post, score };
+    });
 
-    res.json(posts);
+    scored.sort((a, b) => b.score - a.score);
+    res.json(scored.slice(0, 10).map((x) => x.post));
   } catch (error) {
     console.error('Get trending posts error:', error);
     res.status(500).json({ message: 'Server error fetching trending posts' });
@@ -168,6 +169,15 @@ export const likePost = async (req, res) => {
 
     // Update author's likes received
     await User.findByIdAndUpdate(post.author, { $inc: { likesReceived: 1 } });
+
+    // Real-time: notify post author + update counts
+    const io = getIO();
+    if (io) {
+      io.to(`user:${post.author.toString()}`).emit('post:like', {
+        postId,
+        likesCount: post.likesCount
+      });
+    }
 
     res.json({ message: 'Post liked successfully', likesCount: post.likesCount });
   } catch (error) {
@@ -232,6 +242,15 @@ export const createComment = async (req, res) => {
 
     // Update user comments count
     await User.findByIdAndUpdate(req.user._id, { $inc: { commentsCount: 1 } });
+
+    // Real-time: notify post author about comment
+    const io = getIO();
+    if (io) {
+      io.to(`user:${post.author.toString()}`).emit('post:comment', {
+        postId,
+        comment
+      });
+    }
 
     res.status(201).json({
       message: 'Comment created successfully',

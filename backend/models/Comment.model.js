@@ -28,6 +28,9 @@ const commentSchema = new mongoose.Schema({
   timestamps: true
 });
 
+commentSchema.index({ post: 1, createdAt: -1 });
+commentSchema.index({ author: 1, createdAt: -1 });
+
 // Update post comments count when comment is created/deleted
 commentSchema.post('save', async function() {
   const Post = mongoose.model('Post');

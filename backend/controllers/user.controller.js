@@ -6,8 +6,7 @@ import User from '../models/User.model.js';
 export const getUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user._id)
-      .select('-password')
-      .populate('postsCount');
+      .select('-password');
     
     res.json(user);
   } catch (error) {

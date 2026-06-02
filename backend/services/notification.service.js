@@ -2,6 +2,7 @@ import nodemailer from 'nodemailer';
 import Notification from '../models/Notification.model.js';
 import NotificationPreference from '../models/NotificationPreference.model.js';
 import User from '../models/User.model.js';
+import { getIO } from '../src/sockets/io.js';
 
 /**
  * Email transporter configuration
@@ -125,6 +126,18 @@ export const createNotification = async ({
     }
 
     await notification.save();
+
+    // Real-time delivery (best-effort)
+    const io = getIO();
+    if (io) {
+      io.to(`user:${userId}`).emit('notification:new', {
+        id: notification._id,
+        type: notification.type,
+        title: notification.title,
+        message: notification.message,
+        createdAt: notification.createdAt
+      });
+    }
 
     // Retry logic for failed notifications
     if (notification.status === 'failed' && notification.retryCount < 3) {

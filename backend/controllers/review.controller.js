@@ -68,16 +68,6 @@ export const createReview = async (req, res) => {
       content: content.trim()
     });
 
-    // Set edit lock after 24 hours
-    setTimeout(async () => {
-      const reviewToLock = await Review.findById(review._id);
-      if (reviewToLock && reviewToLock.canEdit) {
-        reviewToLock.canEdit = false;
-        reviewToLock.lockedAt = new Date();
-        await reviewToLock.save();
-      }
-    }, 24 * 60 * 60 * 1000); // 24 hours
-
     await review.save();
 
     // Update journey
@@ -119,9 +109,18 @@ export const updateReview = async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to edit this review' });
     }
 
-    if (!review.canEdit) {
-      return res.status(403).json({ 
-        message: 'Review cannot be edited after 24 hours' 
+    // Production-safe edit window enforcement: compute from createdAt.
+    const editWindowMs = 24 * 60 * 60 * 1000;
+    const editableUntil = new Date(review.createdAt.getTime() + editWindowMs);
+    if (Date.now() > editableUntil.getTime()) {
+      // Keep existing field consistent for clients that may rely on it
+      if (review.canEdit) {
+        review.canEdit = false;
+        review.lockedAt = new Date();
+        await review.save();
+      }
+      return res.status(403).json({
+        message: 'Review cannot be edited after 24 hours'
       });
     }
 

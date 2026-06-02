@@ -74,10 +74,32 @@ export const getPreferences = async (req, res) => {
  */
 export const updatePreferences = async (req, res) => {
   try {
+    // Whitelist allowed fields to prevent mass assignment
+    const {
+      emailEnabled,
+      pushEnabled,
+      bookingConfirmation,
+      cancellation,
+      scheduleChange,
+      journeyReminder,
+      promotion,
+      social
+    } = req.body || {};
+
+    const update = {};
+    if (typeof emailEnabled === 'boolean') update.emailEnabled = emailEnabled;
+    if (typeof pushEnabled === 'boolean') update.pushEnabled = pushEnabled;
+    if (bookingConfirmation) update.bookingConfirmation = bookingConfirmation;
+    if (cancellation) update.cancellation = cancellation;
+    if (scheduleChange) update.scheduleChange = scheduleChange;
+    if (journeyReminder) update.journeyReminder = journeyReminder;
+    if (promotion) update.promotion = promotion;
+    if (social) update.social = social;
+
     const preferences = await NotificationPreference.findOneAndUpdate(
       { user: req.user._id },
-      req.body,
-      { new: true, upsert: true }
+      { $set: update },
+      { new: true, upsert: true, runValidators: true }
     );
 
     res.json({ message: 'Preferences updated successfully', preferences });

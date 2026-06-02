@@ -34,6 +34,11 @@ const postSchema = new mongoose.Schema({
     ref: 'Route',
     default: null // Only set if post is related to a specific route
   },
+  journeyId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Journey',
+    default: null // Optional: only set for journey-specific posts
+  },
   destination: {
     type: String,
     default: '' // Destination name if category is 'destinations'

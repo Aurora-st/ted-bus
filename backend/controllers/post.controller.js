@@ -10,7 +10,7 @@ import { getIO } from '../src/sockets/io.js';
  */
 export const createPost = async (req, res) => {
   try {
-    const { title, content, category, routeId, destination, images } = req.body;
+    const { title, content, category, routeId, journeyId, destination, images } = req.body;
 
     if (!title || !content || !category) {
       return res.status(400).json({ 
@@ -30,6 +30,7 @@ export const createPost = async (req, res) => {
       content,
       category,
       routeId: routeId || null,
+      journeyId: journeyId || null,
       destination: destination || '',
       images: images || []
     });
